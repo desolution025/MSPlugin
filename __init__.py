@@ -282,7 +282,7 @@ class MS_Init_ImportProcess():
         
         if self.isSpecularWorkflow:
             if "specular" in self.textureTypes:
-                self.CreateTextureNode("specular", -1150, 200, 0, True, "Specular")
+                self.CreateTextureNode("specular", -1150, 200, 0, True, "Specular IOR Level")
             
             if "gloss" in self.textureTypes:
                 glossNode = self.CreateTextureNode("gloss", -1150, -60)
@@ -312,9 +312,9 @@ class MS_Init_ImportProcess():
             self.mat.blend_method = 'HASHED'
 
         if "translucency" in self.textureTypes:
-            self.CreateTextureNode("translucency", -1550, -420, 0, True, "Transmission")
+            self.CreateTextureNode("translucency", -1550, -420, 0, True, "Transmission Weight")
         elif "transmission" in self.textureTypes:
-            self.CreateTextureNode("transmission", -1550, -420, 1, True, "Transmission")
+            self.CreateTextureNode("transmission", -1550, -420, 1, True, "Transmission Weight")
 
         # If HIGH POLY selected > use normal_bump and no displacement
         # If LODs selected > use corresponding LODs normal + displacement
@@ -427,26 +427,26 @@ class MS_Init_ImportProcess():
                 self.ConnectNodeToMaterial(materialInputIndex, bumpNode)
 
     def CreateDisplacementSetup(self, connectToMaterial):
-        if self.DisplacementSetup == "adaptive":
+        # if self.DisplacementSetup == "adaptive":
             # Add vector>displacement map node
-            displacementNode = self.CreateGenericNode("ShaderNodeDisplacement", 10, -400)
-            displacementNode.inputs["Scale"].default_value = 0.1
-            displacementNode.inputs["Midlevel"].default_value = 0
-            # Add converter>RGB Separator node
-            RGBSplitterNode = self.CreateGenericNode("ShaderNodeSeparateRGB", -250, -499)
-            # Import normal map and normal map node setup.
-            displacementMapNode = self.CreateTextureNode("displacement", -640, -740)
-            # Add displacementMapNode to RGBSplitterNode connection
-            self.mat.node_tree.links.new(RGBSplitterNode.inputs["Image"], displacementMapNode.outputs["Color"])
-            # Add RGBSplitterNode to displacementNode connection
-            self.mat.node_tree.links.new(displacementNode.inputs["Height"], RGBSplitterNode.outputs["R"])
-            # Add normalNode connection to the material output displacement node
-            if connectToMaterial:
-                self.mat.node_tree.links.new(self.nodes.get(self.materialOutputName).inputs["Displacement"], displacementNode.outputs["Displacement"])
-                self.mat.cycles.displacement_method = 'BOTH'
+        displacementNode = self.CreateGenericNode("ShaderNodeDisplacement", 10, -400)
+        displacementNode.inputs["Scale"].default_value = 0.1
+        displacementNode.inputs["Midlevel"].default_value = 0
+        # Add converter>RGB Separator node
+        RGBSplitterNode = self.CreateGenericNode("ShaderNodeSeparateRGB", -250, -499)
+        # Import normal map and normal map node setup.
+        displacementMapNode = self.CreateTextureNode("displacement", -640, -740)
+        # Add displacementMapNode to RGBSplitterNode connection
+        self.mat.node_tree.links.new(RGBSplitterNode.inputs["Image"], displacementMapNode.outputs["Color"])
+        # Add RGBSplitterNode to displacementNode connection
+        self.mat.node_tree.links.new(displacementNode.inputs["Height"], RGBSplitterNode.outputs["R"])
+        # Add normalNode connection to the material output displacement node
+        if connectToMaterial:
+            self.mat.node_tree.links.new(self.nodes.get(self.materialOutputName).inputs["Displacement"], displacementNode.outputs["Displacement"])
+            self.mat.cycles.displacement_method = 'BOTH'
 
-        if self.DisplacementSetup == "regular":
-            pass        
+        # if self.DisplacementSetup == "regular":
+        #     pass        
 
     def ConnectNodeToMaterial(self, materialInputIndex, textureNode):
         self.mat.node_tree.links.new(self.nodes.get(self.parentName).inputs[materialInputIndex], textureNode.outputs[0])
