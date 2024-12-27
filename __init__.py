@@ -341,7 +341,8 @@ class MS_Init_ImportProcess():
         
         self.mappingNode = None
 
-        if self.isCycles and self.assetType not in ["3d", "3dplant"]:
+        # if self.isCycles and self.assetType not in ["3d", "3dplant"]:
+        if self.assetType not in ["3d", "3dplant"]:
             # Create mapping node.
             self.mappingNode = self.CreateGenericNode("ShaderNodeMapping", -1950, 0)
             self.mappingNode.vector_type = 'TEXTURE'
@@ -364,7 +365,8 @@ class MS_Init_ImportProcess():
         if connectToMaterial:
             self.ConnectNodeToMaterial(materialInputIndex, textureNode)
         # If it is Cycles render we connect it to the mapping node.
-        if self.isCycles and self.assetType not in ["3d", "3dplant"]:
+        # if self.isCycles and self.assetType not in ["3d", "3dplant"]:
+        if self.assetType not in ["3d", "3dplant"]:
             self.mat.node_tree.links.new(textureNode.inputs["Vector"], self.mappingNode.outputs["Vector"])
         return textureNode
 
